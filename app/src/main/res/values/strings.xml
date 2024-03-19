@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">LockSettingsConfiguration</string>
+    <string name="title_activity_main">Lock Parameters</string>
+    <string name="title_activity_edit">Edit</string>
+
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="primary">Primary</string>
+    <string name="secondary">Secondary</string>
+    <string name="lock_config_desc">If a lock is installed, check what configuration does the lock need</string>
+    <string name="default_value">"Default value : %s"</string>
+    <string name="hint_min_max">Enter a value between %.1f and %.1f</string>
+
+
+</resources>
