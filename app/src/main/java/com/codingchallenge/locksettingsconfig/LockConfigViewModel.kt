@@ -8,7 +8,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class LockConfigViewModel(application: Application) : AndroidViewModel(application){
+/**
+ * ViewModel class for managing the data and business logic related to the lock configuration screen.
+ * This ViewModel communicates with the UI components of the lock configuration screen,
+ * providing data to display and handling user interactions.
+ * It abstracts the data from the UI, allowing for separation of concerns and easier testing.
+ */
+class LockConfigViewModel(application: Application) : AndroidViewModel(application) {
+    companion object {
+        val TAG: String = LockConfigViewModel::class.java.simpleName
+        const val PARAMETER_NAME = "parameterName"
+    }
 
     private val apiService = LockConfigClient.apiService
     private val repository = LockConfigRepository(apiService)
@@ -20,50 +30,52 @@ class LockConfigViewModel(application: Application) : AndroidViewModel(applicati
     private val _secondaryLockSettings = MutableLiveData<LockConfigData>()
     val secondaryLockSettings: LiveData<LockConfigData> = _secondaryLockSettings
 
-    private val _filteredLockSettings = MutableLiveData<LockConfigData?>()
-    val filteredLockSettings: MutableLiveData<LockConfigData?> = _filteredLockSettings
-
-    val parameterName = "parameterName"
-
+    /**
+     * Fetches the lock configuration from the api or locally and updates the live data
+     */
     fun fetchConfig() {
         viewModelScope.launch {
             try {
                 // Check if the configuration already saved
-                val config = LockSettingsManager(context).getLockSettings(DoorType.PRIMARY)
-                Log.v("MySavedData", config.toString())
+                val config = LockConfigManager(context).getLockSettings(DoorType.PRIMARY)
+                Log.v(TAG, "Saved Config : " + config.toString())
                 config?.let {
-                    Log.v("MySavedData", "Updating UI")
                     _primaryLockSettings.value = it
-                    _secondaryLockSettings.value = LockSettingsManager(context).getLockSettings(DoorType.SECONDARY)
+                    _secondaryLockSettings.value =
+                        LockConfigManager(context).getLockSettings(DoorType.SECONDARY)
+                    Log.v(TAG, "Updated config to Live Data")
                 }
-                    ?: let {
-                        Log.v("Fetching data", "Fetching data")
+                    ?: let {// Fetch the config from API if not saved locally
+                        Log.v(TAG, "Fetching config from API")
                         // Fetch config from the api
                         val data = repository.fetchConfig()
                         // Save fetched data as default values for both doors initially.
-                        Log.v("Fetched Data", data.toString())
+                        Log.v(TAG, "Fetched Config : $data")
                         saveLockSettings(data, data)
                     }
-
             } catch (e: Exception) {
                 // Handle error
-                Log.v("MyData", "Exception occurred")
-                e.printStackTrace()
+                Log.v(TAG, "Exception occurred while fetching config : $e")
             }
         }
     }
 
-    // Method to save lock settings
+    /**
+     *  Method to save lock settings for primary and secondary doors
+     */
     private fun saveLockSettings(
         primaryLockSettings: LockConfigData,
         secondaryLockSettings: LockConfigData
     ) {
-        LockSettingsManager(context).saveLockSettings(primaryLockSettings, DoorType.PRIMARY)
-        LockSettingsManager(context).saveLockSettings(secondaryLockSettings, DoorType.SECONDARY)
+        LockConfigManager(context).saveLockSettings(primaryLockSettings, DoorType.PRIMARY)
+        LockConfigManager(context).saveLockSettings(secondaryLockSettings, DoorType.SECONDARY)
         _primaryLockSettings.value = primaryLockSettings
         _secondaryLockSettings.value = secondaryLockSettings
     }
 
+    /**
+     * Updates the lock settings with the new value of a parameter for the specific door
+     */
     fun updateLockSettings(
         property: String,
         value: String,
@@ -71,16 +83,19 @@ class LockConfigViewModel(application: Application) : AndroidViewModel(applicati
     ) {
         when (doorType) {
             DoorType.PRIMARY -> _primaryLockSettings.value =
-                LockSettingsManager(context).updateAndSaveLockSettings(property, value, doorType)
+                LockConfigManager(context).updateAndSaveLockSettings(property, value, doorType)
 
             DoorType.SECONDARY -> _secondaryLockSettings.value =
-                LockSettingsManager(context).updateAndSaveLockSettings(property, value, doorType)
+                LockConfigManager(context).updateAndSaveLockSettings(property, value, doorType)
         }
     }
 
-    fun getValues(property: String, doorType: DoorType): List<String>? {
-        val lockSettings = LockSettingsManager(context).getLockSettings(doorType)
-        val values = when (property) {
+    /**
+     * Returns the list of values for a specific parameter based on type of door
+     */
+    fun getValues(parameter: String, doorType: DoorType): List<String>? {
+        val lockSettings = LockConfigManager(context).getLockSettings(doorType)
+        val values = when (parameter) {
             LockConfigData::lockVoltage.name -> lockSettings?.lockVoltage?.values
             LockConfigData::lockType.name -> lockSettings?.lockType?.values
             LockConfigData::lockKick.name -> lockSettings?.lockKick?.values
@@ -90,9 +105,12 @@ class LockConfigViewModel(application: Application) : AndroidViewModel(applicati
         return values
     }
 
-    fun getRange(property: String, doorType: DoorType): Range? {
-        val lockSettings = LockSettingsManager(context).getLockSettings(doorType)
-        val range = when (property) {
+    /**
+     * Returns tha range value for a specific parameter based on the type of door.
+     */
+    fun getRange(parameter: String, doorType: DoorType): Range? {
+        val lockSettings = LockConfigManager(context).getLockSettings(doorType)
+        val range = when (parameter) {
             LockConfigData::lockReleaseTime.name -> lockSettings?.lockReleaseTime?.range
             LockConfigData::lockAngle.name -> lockSettings?.lockAngle?.range
             else -> null
@@ -100,9 +118,13 @@ class LockConfigViewModel(application: Application) : AndroidViewModel(applicati
         return range
     }
 
-    fun getDefaultValue(property: String, doorType: DoorType): String {
-        val lockSettings = LockSettingsManager(context).getLockSettings(doorType)
-        val defaultValue = when (property) {
+    /**
+     * Retrieves the default value for a specific property based on the type of door.
+     * This method is used to obtain default values for various properties associated with different types of doors.
+     */
+    fun getDefaultValue(parameter: String, doorType: DoorType): String {
+        val lockSettings = LockConfigManager(context).getLockSettings(doorType)
+        val defaultValue = when (parameter) {
             LockConfigData::lockVoltage.name -> lockSettings?.lockVoltage?.default
             LockConfigData::lockType.name -> lockSettings?.lockType?.default
             LockConfigData::lockKick.name -> lockSettings?.lockKick?.default
@@ -114,9 +136,12 @@ class LockConfigViewModel(application: Application) : AndroidViewModel(applicati
         return defaultValue.toString()
     }
 
-    fun isCommon(property: String): Boolean {
-        val lockSettings = LockSettingsManager(context).getLockSettings(DoorType.PRIMARY)
-        val isCommon = when (property) {
+    /**
+     * Returns true if the same parameter and the value is used for both the doors
+     */
+    fun isCommon(parameter: String): Boolean {
+        val lockSettings = LockConfigManager(context).getLockSettings(DoorType.PRIMARY)
+        val isCommon = when (parameter) {
             LockConfigData::lockRelease.name -> lockSettings?.lockRelease?.common
             LockConfigData::lockAngle.name -> lockSettings?.lockAngle?.common
             else -> false
@@ -124,10 +149,13 @@ class LockConfigViewModel(application: Application) : AndroidViewModel(applicati
         return isCommon ?: false
     }
 
-    // Validation function
-    fun validationError(input: String, range: Range) : String? {
+    /**
+     * Validates the given input against the specified range and returns an error message if the input is not within the range.
+     * Returns null if the input is within the range and valid.
+     */
+    fun validationError(input: String, range: Range): String? {
         try {
-            if(input.isEmpty()){
+            if (input.isEmpty()) {
                 return "Please enter the value"
             }
             val value = input.toDouble()
@@ -138,69 +166,10 @@ class LockConfigViewModel(application: Application) : AndroidViewModel(applicati
                 "Please enter the value within the range"
             }
         } catch (e: NumberFormatException) {
+            Log.e(TAG, "Exception occurred while validating input : $e")
             return "Error"
         }
     }
-
-    fun searchLockSettings(query: String) {
-        val filteredPrimary = _primaryLockSettings.value?.let { lockSettings ->
-            filterLockSettings(lockSettings, query)
-        }
-
-//        val filteredSecondary = _secondaryLockSettings.value?.let { lockSettings ->
-//            filterLockSettings(lockSettings, query)
-//        }
-
-        //val combinedList = filteredPrimary + filteredSecondary
-        _filteredLockSettings.value = filteredPrimary
-    }
-
-    private fun filterLockSettings(lockSettings: LockConfigData, query: String): LockConfigData {
-        return lockSettings.copy(
-            lockVoltage = filterLockVoltage(lockSettings.lockVoltage, query),
-            lockType = filterLockType(lockSettings.lockType, query),
-            lockKick = filterLockKick(lockSettings.lockKick, query),
-            lockRelease = filterLockRelease(lockSettings.lockRelease, query),
-            lockReleaseTime = filterLockReleaseTime(lockSettings.lockReleaseTime, query),
-            lockAngle = filterLockAngle(lockSettings.lockAngle, query)
-        )
-    }
-
-    private fun filterLockVoltage(lockVoltage: LockVoltage, query: String): LockVoltage {
-        return lockVoltage.copy(
-            values = lockVoltage.values.filter { it.contains(query, ignoreCase = true) }
-        )
-    }
-
-    private fun filterLockType(lockType: LockType, query: String): LockType {
-        return lockType.copy(
-            values = lockType.values.filter { it.contains(query, ignoreCase = true) }
-        )
-    }
-
-    private fun filterLockKick(lockKick: LockKick, query: String): LockKick {
-        return lockKick.copy(
-            values = lockKick.values.filter { it.contains(query, ignoreCase = true) }
-        )
-    }
-
-    private fun filterLockRelease(lockRelease: LockRelease, query: String): LockRelease {
-        return lockRelease.copy(
-            values = lockRelease.values.filter { it.contains(query, ignoreCase = true) }
-        )
-    }
-
-    private fun filterLockReleaseTime(lockReleaseTime: LockReleaseTime, query: String): LockReleaseTime {
-        // Range doesn't need to be filtered
-        return lockReleaseTime
-    }
-
-    private fun filterLockAngle(lockAngle: LockAngle, query: String): LockAngle {
-        // Range doesn't need to be filtered
-        return lockAngle
-    }
-
-
 }
 
 

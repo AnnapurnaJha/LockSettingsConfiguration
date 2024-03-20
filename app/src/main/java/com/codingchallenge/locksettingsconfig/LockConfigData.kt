@@ -1,5 +1,10 @@
 package com.codingchallenge.locksettingsconfig
 
+/**
+ * Represents the configuration data for a lock.
+ * This data class encapsulates the settings and properties associated with a lock configuration,
+ * allowing for easy manipulation and transfer of lock configuration data within the application.
+ */
 data class LockConfigData(
     val lockVoltage: LockVoltage,
     val lockType: LockType,

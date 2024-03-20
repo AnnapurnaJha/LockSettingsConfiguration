@@ -9,7 +9,7 @@ class LockConfigRepository (private val apiService: ILockConfigApiService) {
             try {
                 apiService.getConfigData()
             } catch (e: Exception) {
-                // Handle error
+
                 throw e
             }
         }

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".LockParametersActivity">
 
     <LinearLayout
         android:id="@+id/main_layout"
@@ -17,12 +17,11 @@
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/idSvParameter"
+            android:iconifiedByDefault="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:queryHint="Search parameter by name or value"
-            app:iconifiedByDefault="false"
-            android:elevation="1dp" />
+            app:queryHint="@string/search_parameter" />
 
         <LinearLayout
             android:id="@+id/idTvTitle"
@@ -70,7 +69,7 @@
                     android:id="@+id/idTvTitleVoltage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Lock Voltage"
+                    android:text="@string/lock_voltage"
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -81,6 +80,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/idTvTitleVoltage">
 
@@ -124,7 +124,7 @@
                     android:id="@+id/idTvTitleType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Lock Type"
+                    android:text="@string/lock_type"
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -180,7 +180,7 @@
                     android:id="@+id/idTvTitleKick"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Lock Kick"
+                    android:text="@string/lock_kick"
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -236,7 +236,7 @@
                     android:id="@+id/idTvTitleRelease"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Lock Release"
+                    android:text="@string/lock_release"
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -280,7 +280,7 @@
                     android:id="@+id/idTvTitleReleaseTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Lock Release Time"
+                    android:text="@string/lock_release_time"
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -336,7 +336,7 @@
                     android:id="@+id/idTvTitleAngle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Lock Angle"
+                    android:text="@string/lock_angle"
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

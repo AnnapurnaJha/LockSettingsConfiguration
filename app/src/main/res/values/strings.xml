@@ -3,13 +3,21 @@
     <string name="title_activity_main">Lock Parameters</string>
     <string name="title_activity_edit">Edit</string>
 
-    <string name="save">Save</string>
-    <string name="cancel">Cancel</string>
     <string name="primary">Primary</string>
     <string name="secondary">Secondary</string>
+    <string name="lock_voltage">Lock Voltage\n</string>
+    <string name="lock_type">Lock Type</string>
+    <string name="lock_kick">Lock Kick</string>
+    <string name="lock_release">Lock Release</string>
+    <string name="lock_release_time">Lock Release Time</string>
+    <string name="lock_angle">Lock Angle</string>
+
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="primary_secondary">Primary and Secondary</string>
     <string name="lock_config_desc">If a lock is installed, check what configuration does the lock need</string>
     <string name="default_value">"Default value : %s"</string>
     <string name="hint_min_max">Enter a value between %.1f and %.1f</string>
-
+    <string name="search_parameter">Search Parameter</string>
 
 </resources>
